@@ -14,6 +14,8 @@ The turbo boost gauge spec ships with an interactive demo. Try it here: **[games
 
 It simulates a real Nissan Z (RZ34) VR30DDTT boost gauge with physics validated against an actual car. You can switch car configs in the dropdown and feel the difference between the twin-turbo Z and a single-turbo WRX STI.
 
+![Turbo Boost Gauge Demo](docs/preview.png)
+
 ---
 
 ## Catalog
