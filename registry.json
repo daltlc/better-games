@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-06-05T19:05:16.368Z",
+  "specFormatVersion": 1,
+  "specs": [
+    {
+      "id": "crafting",
+      "title": "Crafting System",
+      "version": "1.0.0",
+      "category": "progression",
+      "status": "stable",
+      "tags": [
+        "crafting",
+        "recipes",
+        "items",
+        "progression"
+      ],
+      "dependsOn": [
+        "inventory"
+      ],
+      "requiredBy": [],
+      "variants": [
+        "instant",
+        "timed",
+        "station-based",
+        "skill-gated"
+      ],
+      "path": "specs/progression/crafting.gfs.md"
+    },
+    {
+      "id": "inventory",
+      "title": "Inventory System",
+      "version": "1.0.0",
+      "category": "core-systems",
+      "status": "stable",
+      "tags": [
+        "inventory",
+        "items",
+        "storage",
+        "stacking",
+        "persistence"
+      ],
+      "dependsOn": [],
+      "requiredBy": [
+        "crafting"
+      ],
+      "variants": [
+        "slot-based",
+        "grid-based",
+        "weight-based",
+        "unlimited",
+        "multi-bag"
+      ],
+      "path": "specs/core-systems/inventory.gfs.md"
+    },
+    {
+      "id": "save-system",
+      "title": "Save System",
+      "version": "1.0.0",
+      "category": "core-systems",
+      "status": "stable",
+      "tags": [
+        "persistence",
+        "save",
+        "load",
+        "serialization",
+        "migration"
+      ],
+      "dependsOn": [],
+      "requiredBy": [],
+      "variants": [
+        "single-slot",
+        "multi-slot",
+        "autosave",
+        "checkpoint"
+      ],
+      "path": "specs/core-systems/save-system.gfs.md"
+    },
+    {
+      "id": "turbo-boost-gauge",
+      "title": "Turbo Boost Gauge",
+      "version": "0.1.0",
+      "category": "vehicle-systems",
+      "status": "draft",
+      "tags": [
+        "turbo",
+        "boost",
+        "gauge",
+        "vehicle",
+        "physics",
+        "simulation",
+        "pressure",
+        "forced-induction"
+      ],
+      "dependsOn": [],
+      "requiredBy": [],
+      "variants": [
+        "nissan-z-vr30ddtt",
+        "generic-twin-scroll",
+        "single-turbo"
+      ],
+      "path": "specs/vehicle-systems/turbo-boost-gauge.gfs.md"
+    }
+  ]
+}

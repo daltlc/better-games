@@ -1,0 +1,15 @@
+{
+  "name": "gamespec-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Validation and registry-build tooling for the GameSpec Library. Zero runtime dependencies.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "validate": "node validate.mjs",
+    "build": "node build-registry.mjs",
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turbo Boost Gauge — Car Config Sim</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 32px;
+    padding: 32px;
+  }
+
+  h1 {
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #666;
+  }
+
+  .car-name {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #444;
+    text-align: center;
+    margin-top: -20px;
+  }
+
+  select {
+    width: 100%;
+    background: #111;
+    color: #ccc;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+
+  select:focus { border-color: #444; }
+
+  .gauge-wrap {
+    position: relative;
+    width: 320px;
+    height: 320px;
+  }
+
+  canvas { display: block; }
+
+  .psi-readout {
+    position: absolute;
+    bottom: 58px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .psi-value {
+    font-size: 38px;
+    font-weight: bold;
+    letter-spacing: -1px;
+    color: #fff;
+    line-height: 1;
+    min-width: 90px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .psi-unit {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  .phase-badge {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 6px;
+    display: inline-block;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 320px;
+  }
+
+  .rpm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .rpm-label { font-size: 10px; letter-spacing: 2px; color: #555; width: 60px; }
+
+  .rpm-bar-track {
+    flex: 1;
+    height: 4px;
+    background: #1a1a1a;
+    border-radius: 2px;
+  }
+
+  .rpm-bar-fill {
+    height: 100%;
+    background: #e8a020;
+    border-radius: 2px;
+    max-width: 100%;
+  }
+
+  .rpm-value { font-size: 11px; color: #888; width: 68px; text-align: right; }
+
+  .button-row { display: flex; gap: 12px; width: 100%; }
+
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    background: #111;
+    color: #ccc;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s, border-color 0.1s, color 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn.active        { border-color: #e8a020; color: #e8a020; }
+  .btn.gas.active    { background: #1a1200; }
+  .btn.brake.active  { background: #120000; border-color: #e84040; color: #e84040; }
+
+  .slider-row { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+
+  .slider-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: #1a1a1a;
+    border-radius: 2px;
+    outline: none;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #e8a020;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .divider { width: 100%; height: 1px; background: #1a1a1a; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    width: 320px;
+  }
+
+  .stat {
+    background: #0f0f0f;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .stat-label { font-size: 9px; letter-spacing: 2px; color: #444; text-transform: uppercase; margin-bottom: 4px; }
+  .stat-value { font-size: 15px; color: #ccc; }
+</style>
+</head>
+<body>
+
+<h1>Turbo Boost Gauge</h1>
+<p class="car-name" id="carName">Nissan Z (RZ34) VR30DDTT</p>
+
+<div class="gauge-wrap">
+  <canvas id="gauge" width="320" height="320"></canvas>
+  <div class="psi-readout">
+    <div class="psi-value" id="psiValue">-10.0</div>
+    <div class="psi-unit">PSI</div>
+    <div class="phase-badge" id="phaseBadge">VACUUM</div>
+  </div>
+</div>
+
+<div class="controls">
+
+  <div class="slider-row">
+    <div class="slider-label"><span>CAR CONFIG</span></div>
+    <select id="carSelect">
+      <option value="nissan-z-vr30ddtt">Nissan Z (RZ34) — VR30DDTT twin-turbo</option>
+      <option value="subaru-wrx-sti-ej257">Subaru WRX STI (GR) — EJ257 single-turbo</option>
+    </select>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="rpm-row">
+    <span class="rpm-label">RPM</span>
+    <div class="rpm-bar-track">
+      <div class="rpm-bar-fill" id="rpmFill" style="width:0%"></div>
+    </div>
+    <span class="rpm-value" id="rpmValue">800 rpm</span>
+  </div>
+
+  <div class="button-row">
+    <button class="btn gas" id="gasBtn">&#9650; Gas</button>
+    <button class="btn brake" id="brakeBtn">&#9660; Brake</button>
+  </div>
+
+  <div class="slider-row">
+    <div class="slider-label">
+      <span>THROTTLE</span>
+      <span id="throttleLabel">0%</span>
+    </div>
+    <input type="range" id="throttleSlider" min="0" max="100" value="0">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="slider-row">
+    <div class="slider-label">
+      <span>BOOST TARGET</span>
+      <span id="targetLabel">15.0 psi</span>
+    </div>
+    <!-- Max 20 psi — matches real gauge limit -->
+    <input type="range" id="targetSlider" min="5" max="20" value="15" step="0.5">
+  </div>
+
+</div>
+
+<div class="stats-grid">
+  <div class="stat">
+    <div class="stat-label">Overshoot</div>
+    <div class="stat-value" id="statOvershoot">0.00 psi</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">τ (active)</div>
+    <div class="stat-value" id="statTau">0.45 s</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Exhaust Load</div>
+    <div class="stat-value" id="statExhaust">0.00</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Drop Type</div>
+    <div class="stat-value" id="statDropType">RECIRC</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Boost Target</div>
+    <div class="stat-value" id="statTarget">15.0 psi</div>
+  </div>
+</div>
+
+<script>
+// Car data lives in data/cars/*.ini (same format as Assetto Corsa / rFactor).
+// Embedded here as strings so the demo works without a server. A real game would
+// just: cfg = iniToCfg(parseIni(fs.readFileSync("cars/mycar.ini")))
+
+const CAR_INI = {
+
+'nissan-z-vr30ddtt': `
+[META]
+NAME        = Nissan Z (RZ34) VR30DDTT
+YEAR        = 2023
+ENGINE      = 3.0L Twin-Turbo V6
+TURBOS      = Garrett MGT14446LKSZ x2
+BOV         = NONE
+WASTEGATE   = ELECTRONIC
+
+[GAUGE]
+MIN_PSI = -15
+MAX_PSI =  20
+
+[RPM]
+MAX        = 6800
+IDLE       = 800
+DECEL_RATE = 2200
+
+[BOOST_THRESHOLD]
+RPM_LOW         = 2500
+RPM_FULL        = 3500
+TAPER_START_RPM = 5000
+TAPER_AMOUNT    = 0.35
+
+[PRESSURE]
+TARGET_PSI        = 15.0
+VACUUM_PSI        = -10.0
+MAX_OVERSHOOT_PSI = 2.2
+
+[SPOOL]
+BASE_TAU             = 0.45
+WASTEGATE_SETTLE_TAU = 0.25
+DROP_TAU             = 0.12
+MIN_THROTTLE         = 0.65
+`,
+
+'subaru-wrx-sti-ej257': `
+[META]
+NAME      = Subaru WRX STI (GR/GV) EJ257
+YEAR      = 2008-2014
+ENGINE    = 2.5L Turbocharged Flat-4 (EJ257)
+TURBOS    = Mitsubishi TD05H-16G6 x1
+BOV       = ATMOSPHERIC
+WASTEGATE = PNEUMATIC
+
+[GAUGE]
+MIN_PSI = -15
+MAX_PSI =  25
+
+[RPM]
+MAX        = 7200
+IDLE       = 900
+DECEL_RATE = 1800
+
+[BOOST_THRESHOLD]
+RPM_LOW         = 2500
+RPM_FULL        = 4500
+TAPER_START_RPM = 6800
+TAPER_AMOUNT    = 0.10
+
+[PRESSURE]
+TARGET_PSI        = 14.7
+VACUUM_PSI        = -9.0
+MAX_OVERSHOOT_PSI = 3.5
+
+[SPOOL]
+BASE_TAU             = 0.85
+WASTEGATE_SETTLE_TAU = 0.35
+DROP_TAU             = 0.06
+MIN_THROTTLE         = 0.40
+`,
+
+};
+
+// INI parser — handles [SECTIONS], key=value pairs, and ; comments.
+// Returns nested object: parsed['SPOOL']['BASE_TAU'] = 0.45
+function parseIni(text) {
+  const result = {};
+  let section  = null;
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith(';')) continue;           // blank or comment
+    const secMatch = line.match(/^\[(.+)\]$/);
+    if (secMatch) { section = secMatch[1].trim(); result[section] = {}; continue; }
+    const kvMatch = line.match(/^([^=;]+)=([^;]*)/);      // key = value ; optional comment
+    if (kvMatch && section) {
+      const key = kvMatch[1].trim();
+      const raw = kvMatch[2].trim();
+      // Auto-convert numeric strings to numbers; leave everything else as string
+      result[section][key] = raw !== '' && !isNaN(raw) ? parseFloat(raw) : raw;
+    }
+  }
+  return result;
+}
+
+
+// Maps parsed INI sections to the flat cfg object the physics loop reads.
+// Defaults allow a minimal INI to still produce a working simulation.
+function iniToCfg(ini) {
+  const g  = ini.GAUGE            || {};
+  const r  = ini.RPM              || {};
+  const bt = ini.BOOST_THRESHOLD  || {};
+  const p  = ini.PRESSURE         || {};
+  const s  = ini.SPOOL            || {};
+  return {
+    boostThresholdRpm:   bt.RPM_LOW              ?? 2500,
+    boostFullRpm:        bt.RPM_FULL             ?? 3500,
+    taperStartRpm:       bt.TAPER_START_RPM      ?? 5000,
+    taperAmount:         bt.TAPER_AMOUNT         ?? 0.35,
+    targetBoostPsi:      p.TARGET_PSI            ?? 15.0,
+    vacuumPsi:           p.VACUUM_PSI            ?? -10.0,
+    maxOvershootPsi:     p.MAX_OVERSHOOT_PSI     ?? 2.2,
+    baseSpoolTau:        s.BASE_TAU              ?? 0.45,
+    wastegateSettleTau:  s.WASTEGATE_SETTLE_TAU  ?? 0.25,
+    dropTau:             s.DROP_TAU              ?? 0.12,
+    minThrottleForSpool: s.MIN_THROTTLE          ?? 0.65,
+    maxRpm:              r.MAX                   ?? 6800,
+    rpmIdle:             r.IDLE                  ?? 800,
+    rpmDecel:            r.DECEL_RATE            ?? 2200,
+  };
+}
+
+
+// loadCar — parse INI by key, rebuild cfg and gauge scale, reset physics state
+let GAUGE_MIN = -15;  // updated from INI on car switch
+let GAUGE_MAX =  20;
+
+let cfg = {};         // populated by loadCar() below
+let carMeta = {};     // META section from INI (NAME, BOV, WASTEGATE, etc.)
+
+function loadCar(id) {
+  const parsed  = parseIni(CAR_INI[id]);
+  carMeta       = parsed.META || {};
+  cfg           = iniToCfg(parsed);
+  GAUGE_MIN     = parsed.GAUGE?.MIN_PSI ?? -15;
+  GAUGE_MAX     = parsed.GAUGE?.MAX_PSI ?? 20;
+
+  // Reset physics state to new car's idle floor
+  state.boostPsi        = cfg.vacuumPsi;
+  state.prevBoostPsi    = cfg.vacuumPsi;
+  state.phase           = 'VACUUM';
+  state.overshootEnergy = 0;
+  state.rpm             = cfg.rpmIdle;
+  state.throttle        = 0;
+  state.exhaustEnergy   = 0;
+
+  // Reset sliders to match new car's defaults
+  targetSlider.value = cfg.targetBoostPsi;
+  document.getElementById('targetLabel').textContent = cfg.targetBoostPsi.toFixed(1) + ' psi';
+  throttleSlider.value = 0;
+  document.getElementById('throttleLabel').textContent = '0%';
+  setGas(false);
+  setBrake(false);
+
+  // Update header
+  document.getElementById('carName').textContent = carMeta.NAME || id;
+  document.getElementById('statDropType').textContent = carMeta.BOV === 'NONE' ? 'RECIRC' : 'BOV';
+}
+
+
+let state = {
+  boostPsi:        0,
+  phase:           'VACUUM',
+  overshootEnergy: 0,
+  prevBoostPsi:    0,
+  rpm:             800,
+  throttle:        0,
+  exhaustEnergy:   0,
+};
+
+let gasDown   = false;
+let brakeDown = false;
+let prevTime  = null;
+
+
+// Controls — input handling (mouse, touch, keyboard, sliders)
+function setGas(on) {
+  gasDown = on;
+  document.getElementById('gasBtn').classList.toggle('active', on);
+  if (on) {
+    throttleSlider.value = 100;
+    document.getElementById('throttleLabel').textContent = '100%';
+  } else {
+    throttleSlider.value = 0;
+    state.throttle = 0;
+    document.getElementById('throttleLabel').textContent = '0%';
+  }
+}
+
+function setBrake(on) {
+  brakeDown = on;
+  document.getElementById('brakeBtn').classList.toggle('active', on);
+}
+
+const gasBtn         = document.getElementById('gasBtn');
+const brakeBtn       = document.getElementById('brakeBtn');
+const throttleSlider = document.getElementById('throttleSlider');
+const targetSlider   = document.getElementById('targetSlider');
+
+gasBtn.addEventListener('mousedown',  () => setGas(true));
+gasBtn.addEventListener('mouseup',    () => setGas(false));
+gasBtn.addEventListener('mouseleave', () => { if (gasDown) setGas(false); });
+brakeBtn.addEventListener('mousedown',  () => setBrake(true));
+brakeBtn.addEventListener('mouseup',    () => setBrake(false));
+brakeBtn.addEventListener('mouseleave', () => { if (brakeDown) setBrake(false); });
+
+gasBtn.addEventListener('touchstart',   e => { e.preventDefault(); setGas(true);    }, { passive: false });
+gasBtn.addEventListener('touchend',     e => { e.preventDefault(); setGas(false);   }, { passive: false });
+brakeBtn.addEventListener('touchstart', e => { e.preventDefault(); setBrake(true);  }, { passive: false });
+brakeBtn.addEventListener('touchend',   e => { e.preventDefault(); setBrake(false); }, { passive: false });
+
+throttleSlider.addEventListener('input', () => {
+  if (!gasDown) state.throttle = throttleSlider.value / 100;
+  document.getElementById('throttleLabel').textContent = throttleSlider.value + '%';
+});
+
+targetSlider.addEventListener('input', () => {
+  cfg.targetBoostPsi = Math.min(parseFloat(targetSlider.value), GAUGE_MAX);
+  document.getElementById('targetLabel').textContent = cfg.targetBoostPsi.toFixed(1) + ' psi';
+});
+
+document.getElementById('carSelect').addEventListener('change', e => {
+  loadCar(e.target.value);
+});
+
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !e.repeat) { e.preventDefault(); setGas(true); }
+  if (e.code === 'KeyB'  && !e.repeat) setBrake(true);
+});
+window.addEventListener('keyup', e => {
+  if (e.code === 'Space') setGas(false);
+  if (e.code === 'KeyB')  setBrake(false);
+});
+
+
+// Physics update — called once per frame with dt = seconds since last frame
+function update(dt) {
+  dt = Math.min(dt, 0.1);  // cap to prevent huge jumps on tab resume
+
+  // STEP 1: Resolve throttle
+  let throttle = gasDown ? 1.0 : state.throttle;
+  if (brakeDown) throttle = 0;
+  state.throttle = throttle;
+
+  // STEP 2: Simulate RPM (first-order approach, 2.5s time constant)
+  const rpmTarget = throttle > 0.02
+    ? cfg.rpmIdle + (cfg.maxRpm - cfg.rpmIdle) * throttle
+    : cfg.rpmIdle;
+  if (brakeDown) {
+    state.rpm = Math.max(cfg.rpmIdle, state.rpm - cfg.rpmDecel * dt);
+  } else {
+    state.rpm = Math.min(Math.max(
+      state.rpm + ((rpmTarget - state.rpm) / 2.5) * dt,
+      cfg.rpmIdle), cfg.maxRpm);
+  }
+
+  // Exhaust energy = rpmFactor × throttleFactor (both must be high simultaneously).
+  // rpmFactor: 0 below boostThresholdRpm → 1 at boostFullRpm.
+  // throttleFactor: 0 below minThrottleForSpool (ECU wastegate suppression) → 1 at WOT.
+  const rpmFactor = Math.min(Math.max(
+    (state.rpm - cfg.boostThresholdRpm) / (cfg.boostFullRpm - cfg.boostThresholdRpm),
+    0), 1);
+  const throttleFactor = Math.min(Math.max(
+    (throttle - cfg.minThrottleForSpool) / (1.0 - cfg.minThrottleForSpool),
+    0), 1);
+  const exhaustEnergy = rpmFactor * throttleFactor;
+  state.exhaustEnergy = exhaustEnergy;
+
+  // High-RPM taper: ECU/wastegate reduces boost above TAPER_START_RPM (per-car in INI).
+  const rpmTaper = state.rpm > cfg.taperStartRpm
+    ? 1.0 - Math.min((state.rpm - cfg.taperStartRpm) / (cfg.maxRpm - cfg.taperStartRpm), 1) * cfg.taperAmount
+    : 1.0;
+
+  // Boost target: pow(0.8) gives a non-linear curve; below 0.02 energy = vacuum.
+  let boostTarget;
+  if (exhaustEnergy < 0.02) {
+    boostTarget = cfg.vacuumPsi;
+  } else {
+    boostTarget = cfg.targetBoostPsi * Math.pow(exhaustEnergy, 0.8) * rpmTaper;
+  }
+
+  // Effective spool τ = baseSpoolTau / sqrt(exhaustEnergy) — slower at partial load.
+  // On throttle lift, use dropTau (recirculation valve or BOV depending on car).
+  const effectiveSpoolTau = exhaustEnergy > 0.02
+    ? cfg.baseSpoolTau / Math.sqrt(exhaustEnergy)
+    : 999;
+  const tau = boostTarget > state.boostPsi ? effectiveSpoolTau : cfg.dropTau;
+
+  // First-order RC filter: nextBoost = current + ((target - current) / τ) × dt
+  let nextBoost = state.boostPsi + ((boostTarget - state.boostPsi) / tau) * dt;
+
+  // Determine phase before adding overshoot spike.
+  const prevPhase = state.phase;
+  let nextPhase;
+  if (exhaustEnergy < 0.05 && nextBoost <= cfg.vacuumPsi + 0.8) {
+    nextPhase = 'VACUUM';
+  } else if (nextBoost < cfg.targetBoostPsi - 0.5) {
+    nextPhase = boostTarget > cfg.vacuumPsi + 1 ? 'SPOOLING' : 'DROPPING';
+  } else {
+    nextPhase = 'BOOSTING';
+  }
+
+  // Overshoot spike: fires once on VACUUM→SPOOLING, decays via exp(-dt/wastegateSettleTau).
+  if (prevPhase === 'VACUUM' && nextPhase === 'SPOOLING') {
+    state.overshootEnergy = cfg.maxOvershootPsi;
+  } else {
+    state.overshootEnergy *= Math.exp(-dt / cfg.wastegateSettleTau);
+    if (state.overshootEnergy < 0.01) state.overshootEnergy = 0;
+  }
+  nextBoost += state.overshootEnergy;
+
+  // Clamp to physical gauge limits.
+  const peakAllowed = Math.min(cfg.targetBoostPsi + cfg.maxOvershootPsi, GAUGE_MAX);
+  nextBoost = Math.min(Math.max(nextBoost, GAUGE_MIN), peakAllowed);
+
+  state.prevBoostPsi = state.boostPsi;
+  state.boostPsi     = nextBoost;
+  state.phase        = nextPhase;
+}
+
+
+// Gauge drawing — runs every frame after physics update
+const canvas = document.getElementById('gauge');
+const ctx    = canvas.getContext('2d');
+const CX = 160, CY = 160, R = 130;
+
+// 300° arc, bottom-left (210°) → bottom-right (330°). Canvas offset -90° so 0° = top.
+const ARC_START_DEG = 210;
+const ARC_SPAN_DEG  = 300;
+const toRad         = deg => (deg - 90) * Math.PI / 180;
+const START_ANG     = toRad(ARC_START_DEG);
+const ARC_SPAN      = ARC_SPAN_DEG * Math.PI / 180;
+
+// Normalizes psi to [0,1] across the gauge range, maps to arc angle.
+function psiToAngle(psi) {
+  const t = Math.min(Math.max((psi - GAUGE_MIN) / (GAUGE_MAX - GAUGE_MIN), 0), 1);
+  return START_ANG + t * ARC_SPAN;
+}
+
+const PHASE_COLORS = {
+  VACUUM:   { accent: '#444',    badge: '#1a1a1a', text: '#555' },
+  SPOOLING: { accent: '#e8a020', badge: '#1a1000', text: '#e8a020' },
+  BOOSTING: { accent: '#20e880', badge: '#001a10', text: '#20e880' },
+  DROPPING: { accent: '#e82020', badge: '#1a0000', text: '#e82020' },
+};
+
+function drawGauge() {
+  const psi       = state.boostPsi;
+  const phase     = state.phase;
+  const colors    = PHASE_COLORS[phase] || PHASE_COLORS.VACUUM;
+  const needleAng = psiToAngle(psi);
+  const redStart  = psiToAngle(cfg.targetBoostPsi);
+  const zeroAng   = psiToAngle(0);
+
+  ctx.clearRect(0, 0, 320, 320);
+
+  // Dial background
+  ctx.beginPath();
+  ctx.arc(CX, CY, R, 0, Math.PI * 2);
+  ctx.fillStyle = '#0c0c0c';
+  ctx.fill();
+  ctx.strokeStyle = '#1c1c1c';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Full arc track (dim background strip)
+  ctx.beginPath();
+  ctx.arc(CX, CY, R - 18, START_ANG, START_ANG + ARC_SPAN);
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 12;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Active arc fill — split at 0 psi line (vacuum vs boost zones)
+  if (psi < 0) {
+    ctx.beginPath();
+    ctx.arc(CX, CY, R - 18, START_ANG, needleAng);
+    ctx.strokeStyle = colors.accent;
+    ctx.lineWidth = 12;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  } else {
+    ctx.beginPath();
+    ctx.arc(CX, CY, R - 18, START_ANG, zeroAng);
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.lineWidth = 12;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    if (needleAng > zeroAng + 0.01) {
+      ctx.beginPath();
+      ctx.arc(CX, CY, R - 18, zeroAng, needleAng);
+      ctx.strokeStyle = colors.accent;
+      ctx.lineWidth = 12;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+  }
+
+  // Redline overlay — boost target → dial end
+  ctx.beginPath();
+  ctx.arc(CX, CY, R - 18, redStart, START_ANG + ARC_SPAN);
+  ctx.strokeStyle = 'rgba(220,50,50,0.18)';
+  ctx.lineWidth = 12;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Tick marks — dynamically spaced for the car's gauge range
+  ctx.font = '9px Courier New';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const step = (GAUGE_MAX - GAUGE_MIN) <= 35 ? 5 : 10;
+  for (let p = GAUGE_MIN; p <= GAUGE_MAX; p += step) {
+    const ang     = psiToAngle(p);
+    const isMajor = p % (step * 2) === 0 || p === 0;
+    const rInner  = isMajor ? R - 32 : R - 28;
+    ctx.beginPath();
+    ctx.moveTo(CX + Math.cos(ang) * rInner, CY + Math.sin(ang) * rInner);
+    ctx.lineTo(CX + Math.cos(ang) * (R - 22), CY + Math.sin(ang) * (R - 22));
+    ctx.strokeStyle = isMajor ? '#555' : '#333';
+    ctx.lineWidth   = isMajor ? 2 : 1;
+    ctx.lineCap     = 'butt';
+    ctx.stroke();
+    if (isMajor) {
+      ctx.fillStyle = p === 0 ? '#888' : '#444';
+      ctx.fillText(p, CX + Math.cos(ang) * (R - 46), CY + Math.sin(ang) * (R - 46));
+    }
+  }
+
+  // Prominent 0 psi marker
+  const z = psiToAngle(0);
+  ctx.beginPath();
+  ctx.moveTo(CX + Math.cos(z) * (R - 32), CY + Math.sin(z) * (R - 32));
+  ctx.lineTo(CX + Math.cos(z) * (R - 20), CY + Math.sin(z) * (R - 20));
+  ctx.strokeStyle = '#666';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#333';
+  ctx.font = '10px Courier New';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('BOOST', CX + 28, CY + 68);
+  ctx.letterSpacing = '0px';
+  ctx.fillStyle = '#444';
+  ctx.font = '9px Courier New';
+  ctx.fillText('psi', CX - 2, CY - 82);
+
+  // Needle — rotated to angle via canvas transform
+  ctx.save();
+  ctx.translate(CX, CY);
+  ctx.rotate(needleAng);
+  ctx.beginPath();
+  ctx.moveTo(-14, 0);
+  ctx.lineTo(R - 28, 0);
+  ctx.strokeStyle = psi > cfg.targetBoostPsi ? '#ff4040' : '#ff3030';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.restore();
+
+  // Center hub
+  ctx.beginPath();
+  ctx.arc(CX, CY, 11, 0, Math.PI * 2);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(CX, CY, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#555';
+  ctx.fill();
+
+  // DOM readouts
+  const psiEl   = document.getElementById('psiValue');
+  const badgeEl = document.getElementById('phaseBadge');
+
+  psiEl.textContent = psi.toFixed(1);
+  psiEl.style.color = psi > cfg.targetBoostPsi ? '#ff4040'
+                    : psi > 0                  ? colors.accent
+                    : '#aaa';
+
+  badgeEl.textContent      = phase;
+  badgeEl.style.background = colors.badge;
+  badgeEl.style.color      = colors.text;
+
+  const rpmPct = ((state.rpm - cfg.rpmIdle) / (cfg.maxRpm - cfg.rpmIdle)) * 100;
+  document.getElementById('rpmFill').style.width  = Math.min(Math.max(rpmPct, 0), 100) + '%';
+  document.getElementById('rpmValue').textContent = Math.round(state.rpm) + ' rpm';
+
+  const exhaustE = state.exhaustEnergy || 0;
+  const activeTau = phase === 'DROPPING'
+    ? cfg.dropTau
+    : (exhaustE > 0.02 ? cfg.baseSpoolTau / Math.sqrt(exhaustE) : 999);
+
+  document.getElementById('statOvershoot').textContent = state.overshootEnergy.toFixed(2) + ' psi';
+  document.getElementById('statTau').textContent        = activeTau > 99 ? '∞' : activeTau.toFixed(2) + ' s';
+  document.getElementById('statExhaust').textContent    = exhaustE.toFixed(3);
+  document.getElementById('statTarget').textContent     = cfg.targetBoostPsi.toFixed(1) + ' psi';
+}
+
+
+loadCar('nissan-z-vr30ddtt');
+
+function loop(ts) {
+  if (prevTime !== null) {
+    update((ts - prevTime) / 1000);
+    drawGauge();
+  }
+  prevTime = ts;
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
