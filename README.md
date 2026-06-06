@@ -1,10 +1,10 @@
 # Better Games Library
 
-I was playing Forza and noticed the turbo gauge was completely wrong. Boost builds instantly, drops instantly, and doesn't care what RPM you're at or how hard you're on the throttle. It felt like a fuel meter, not a turbocharger. Real turbos spool up based on exhaust energy, hold boost through a wastegate, and behave completely differently depending on whether you have a big single turbo or twin small ones. None of that was in the game.
+I was playing Forza and noticed the turbo gauge was completely wrong. Boost builds instantly, drops instantly, and doesn't care what RPM you're at or how hard you're on the throttle.
 
 So I started researching. Read STILLEN's VR30DDTT analysis, dug through EcuTek boost control docs, drove my actual Nissan Z and compared the data. Built a simulation that actually matches what the car does. Then I thought: why should every game developer have to do all this from scratch?
 
-That's what this library is. A collection of **game mechanic specs** that any developer can pick up and implement, whether you're building an indie game in Godot, a web game in JavaScript, or working on the next Forza. Each spec covers the hard stuff: the physics research, the edge cases, the data contracts, the test cases. You read the spec and implement it in whatever engine or language you're using. No lock-in, no dependencies, no reinventing the wheel.
+This library is a  collection of **game mechanic specs** that any developer can pick up and implement, whether you're building an indie game in Godot, a web game in JavaScript, or working on the next Forza. Each spec covers the hard stuff: the physics research, the edge cases, the data contracts, the test cases. You read the spec and implement it in whatever engine or language you're using. No lock-in, no dependencies, no reinventing the wheel.
 
 The turbo boost gauge is just the first one. The goal is a full library covering everything from inventory systems to vehicle physics.
 
