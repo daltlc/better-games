@@ -1,4 +1,4 @@
-# GameSpec Library
+# Better Games Library
 
 I was playing Forza and noticed the turbo gauge was completely wrong. Boost builds instantly, drops instantly, and doesn't care what RPM you're at or how hard you're on the throttle. It felt like a fuel meter, not a turbocharger. Real turbos spool up based on exhaust energy, hold boost through a wastegate, and behave completely differently depending on whether you have a big single turbo or twin small ones. None of that was in the game.
 
@@ -12,7 +12,7 @@ The turbo boost gauge is just the first one. The goal is a full library covering
 
 ## Live demo
 
-The turbo boost gauge spec ships with an interactive demo. Try it here: **[gamespec-library demo](https://daltlc.github.io/gamespec-library)**
+The turbo boost gauge spec ships with an interactive demo. Try it here: **[better-games demo](https://daltlc.github.io/better-games)**
 
 It simulates a real Nissan Z (RZ34) VR30DDTT boost gauge with physics validated against an actual car. You can switch car configs in the dropdown and feel the difference between the twin-turbo Z and a single-turbo WRX STI.
 
@@ -24,10 +24,10 @@ It simulates a real Nissan Z (RZ34) VR30DDTT boost gauge with physics validated 
 
 | Spec | Category | Status |
 |---|---|---|
-| [`inventory`](specs/core-systems/inventory.gfs.md) | core-systems | stable |
-| [`crafting`](specs/progression/crafting.gfs.md) | progression | stable |
-| [`save-system`](specs/core-systems/save-system.gfs.md) | core-systems | stable |
-| [`turbo-boost-gauge`](specs/vehicle-systems/turbo-boost-gauge.gfs.md) | vehicle-systems | draft |
+| [`inventory`](specs/core-systems/inventory.bgl.md) | core-systems | stable |
+| [`crafting`](specs/progression/crafting.bgl.md) | progression | stable |
+| [`save-system`](specs/core-systems/save-system.bgl.md) | core-systems | stable |
+| [`turbo-boost-gauge`](specs/vehicle-systems/turbo-boost-gauge.bgl.md) | vehicle-systems | draft |
 
 Machine-readable version: [`registry.json`](registry.json)
 
@@ -48,7 +48,7 @@ Roadmap: `equipment`, `loot`, `shop`, `quests`, `dialogue`, `health-combat`, `ve
 
 Paste the spec into your prompt and tell the agent what engine you're using:
 
-> Implement the feature in `specs/vehicle-systems/turbo-boost-gauge.gfs.md` for my project. It uses **[your engine / language]**. Follow the Agent Instructions section. Generate unit tests from the Test Cases section.
+> Implement the feature in `specs/vehicle-systems/turbo-boost-gauge.bgl.md` for my project. It uses **[your engine / language]**. Follow the Agent Instructions section. Generate unit tests from the Test Cases section.
 
 More prompt patterns in [`examples/USAGE.md`](examples/USAGE.md). The interactive demo lives at [`docs/index.html`](docs/index.html).
 
@@ -88,8 +88,8 @@ data/cars/       # per-car INI configs for vehicle-systems specs
 docs/            # GitHub Pages (index.html is the live demo)
 examples/        # prompt patterns for AI agents
 tools/           # validator, registry builder, tests
-SPEC-FORMAT.md   # the meta-spec every .gfs.md conforms to
-TEMPLATE.gfs.md  # copy this to start a new spec
+SPEC-FORMAT.md   # the meta-spec every .bgl.md conforms to
+TEMPLATE.bgl.md  # copy this to start a new spec
 registry.json    # generated catalog, do not hand-edit
 ```
 

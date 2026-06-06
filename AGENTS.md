@@ -1,13 +1,13 @@
 # AGENTS.md
 
-Canonical engineering standards and project conventions for **GameSpec Library (GFS)**.
+Canonical engineering standards and project conventions for **Better Games Library (GFS)**.
 This file governs **all contributors** — human or AI. `CLAUDE.md` simply points here.
 
 ---
 
 ## What this project is
 
-A curated, versioned library of **engine-agnostic, language-agnostic game feature specifications** (`*.gfs.md`). Each spec is precise enough that any AI agent, model, or human can read it and implement that feature in their own stack (Unity/C#, Godot/GDScript, TS/React, Roblox/Lua, …). Specs are **pure design** — no shipped implementation code.
+A curated, versioned library of **engine-agnostic, language-agnostic game feature specifications** (`*.bgl.md`). Each spec is precise enough that any AI agent, model, or human can read it and implement that feature in their own stack (Unity/C#, Godot/GDScript, TS/React, Roblox/Lua, …). Specs are **pure design** — no shipped implementation code.
 
 ---
 
@@ -17,7 +17,7 @@ This project intentionally has a tiny stack. Documented here and in `README.md`:
 
 | Layer | What | Where |
 |---|---|---|
-| **Content** | Markdown feature specs + docs, authored to `SPEC-FORMAT.md` | `specs/**/*.gfs.md` |
+| **Content** | Markdown feature specs + docs, authored to `SPEC-FORMAT.md` | `specs/**/*.bgl.md` |
 | **Schema / contract** | YAML frontmatter per spec → generated catalog | spec frontmatter → `registry.json` |
 | **Tooling** | Node.js (ESM, **zero runtime deps**): shared parser, validator, registry builder | `tools/` |
 | **Tests** | Node's built-in `node:test` + `node:assert` (zero-dep) | `tools/*.test.mjs` |
@@ -65,7 +65,7 @@ Docs and the changelog are **never** a follow-up task. A change that touches beh
 
 ## Definition of done for a spec
 
-A `*.gfs.md` is done when it: has complete, well-typed frontmatter; contains all required sections (see `SPEC-FORMAT.md`); declares reciprocal `dependsOn`/`requiredBy` edges; passes `npm run validate`; is included in a regenerated `registry.json`; and is recorded in `CHANGELOG.md`.
+A `*.bgl.md` is done when it: has complete, well-typed frontmatter; contains all required sections (see `SPEC-FORMAT.md`); declares reciprocal `dependsOn`/`requiredBy` edges; passes `npm run validate`; is included in a regenerated `registry.json`; and is recorded in `CHANGELOG.md`.
 
 ---
 

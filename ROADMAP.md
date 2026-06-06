@@ -1,6 +1,6 @@
 # Roadmap
 
-Forward-looking work for the GameSpec Library. Two tracks: **content** (more specs) and **engineering** (the tooling that supports them). Tool-agnostic — no infrastructure/CI-CD assumptions.
+Forward-looking work for the Better Games Library. Two tracks: **content** (more specs) and **engineering** (the tooling that supports them). Tool-agnostic — no infrastructure/CI-CD assumptions.
 
 ## Content — upcoming specs
 

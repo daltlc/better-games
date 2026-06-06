@@ -1,12 +1,12 @@
-# Using GameSpecs
+# Using Better Gamess
 
-A GameSpec is a portable design. Here is how to turn one into a working implementation — by hand or with an AI agent.
+A Better Games is a portable design. Here is how to turn one into a working implementation — by hand or with an AI agent.
 
 ## The general prompt pattern
 
 Give your agent the spec file plus your stack and constraints:
 
-> Implement the feature described in `<path-to-spec>.gfs.md` for my project.
+> Implement the feature described in `<path-to-spec>.bgl.md` for my project.
 > - Stack: **<engine / language>**.
 > - Follow the spec's **Agent Instructions** section exactly.
 > - Treat the **Data Contracts** as the source of truth; do not invent fields.
@@ -29,7 +29,7 @@ The specs are engine-agnostic, but here is how each typically lands:
 
 ## Worked example — inventory in Godot
 
-> Implement `specs/core-systems/inventory.gfs.md` for my Godot 4 / GDScript project.
+> Implement `specs/core-systems/inventory.bgl.md` for my Godot 4 / GDScript project.
 > Use the `slot-based` variant with `maxSlots = 30` and `maxWeight = 0` (no weight limit).
 > Make it an Autoload singleton named `Inventory` that emits signals matching the spec's Events table (`item_added`, `item_removed`, …). Item definitions are `Resource` files in `res://items/`; I'll give you the fields. Generate GUT tests from the Test Cases section.
 

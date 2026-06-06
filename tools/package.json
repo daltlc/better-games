@@ -1,8 +1,8 @@
 {
-  "name": "gamespec-tools",
+  "name": "better-games-tools",
   "version": "0.1.0",
   "private": true,
-  "description": "Validation and registry-build tooling for the GameSpec Library. Zero runtime dependencies.",
+  "description": "Validation and registry-build tooling for the Better Games Library. Zero runtime dependencies.",
   "type": "module",
   "engines": {
     "node": ">=18"

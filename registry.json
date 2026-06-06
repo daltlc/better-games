@@ -24,7 +24,7 @@
         "station-based",
         "skill-gated"
       ],
-      "path": "specs/progression/crafting.gfs.md"
+      "path": "specs/progression/crafting.bgl.md"
     },
     {
       "id": "inventory",
@@ -50,7 +50,7 @@
         "unlimited",
         "multi-bag"
       ],
-      "path": "specs/core-systems/inventory.gfs.md"
+      "path": "specs/core-systems/inventory.bgl.md"
     },
     {
       "id": "save-system",
@@ -73,7 +73,7 @@
         "autosave",
         "checkpoint"
       ],
-      "path": "specs/core-systems/save-system.gfs.md"
+      "path": "specs/core-systems/save-system.bgl.md"
     },
     {
       "id": "turbo-boost-gauge",
@@ -98,7 +98,7 @@
         "generic-twin-scroll",
         "single-turbo"
       ],
-      "path": "specs/vehicle-systems/turbo-boost-gauge.gfs.md"
+      "path": "specs/vehicle-systems/turbo-boost-gauge.bgl.md"
     }
   ]
 }

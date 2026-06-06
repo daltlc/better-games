@@ -1,10 +1,10 @@
 // Minimal, dependency-free parser for the constrained YAML frontmatter subset
-// used by GameSpec files. Supports scalar strings, numbers, and inline string
+// used by Better Games files. Supports scalar strings, numbers, and inline string
 // arrays (`[a, b, c]`). This is the ONLY place frontmatter is parsed — the
 // validator, registry builder, and tests all import it (DRY).
 
 /**
- * Split a GameSpec document into its frontmatter object and markdown body.
+ * Split a Better Games document into its frontmatter object and markdown body.
  * Returns { ok: true, data, body } or { ok: false, error } — never throws on
  * malformed input, so callers get a clean, reportable error.
  *

@@ -1,4 +1,4 @@
-// Validates every GameSpec under specs/ against the GFS meta-format.
+// Validates every Better Games under specs/ against the BGL meta-format.
 // Exits non-zero (and prints a clear per-file report) if anything fails.
 // Exposes pure functions so the test suite can exercise the rules directly.
 
@@ -21,7 +21,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(HERE, "..");
 export const SPECS_DIR = path.join(REPO_ROOT, "specs");
 
-/** Recursively collect *.gfs.md files, refusing to escape `root` (no traversal). */
+/** Recursively collect *.bgl.md files, refusing to escape `root` (no traversal). */
 export function walkSpecs(dir, root = dir) {
   const resolvedRoot = path.resolve(root);
   const out = [];

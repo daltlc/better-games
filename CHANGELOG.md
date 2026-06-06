@@ -18,7 +18,7 @@ See [Conventional Commits](https://www.conventionalcommits.org/) for commit guid
 
 ### Added
 - Project foundation: `README.md`, `AGENTS.md` (engineering standards) + `CLAUDE.md` pointer, `CONTRIBUTING.md`, `LICENSE` (MIT), `ROADMAP.md`.
-- `SPEC-FORMAT.md` — the GFS meta-spec (frontmatter schema, required sections, authoring conventions) — and `TEMPLATE.gfs.md`.
+- `SPEC-FORMAT.md` — the BGL meta-spec (frontmatter schema, required sections, authoring conventions) — and `TEMPLATE.bgl.md`.
 - Three seed specs forming a real dependency graph:
   - `inventory` (core-systems, root, required by `crafting`).
   - `crafting` (progression, depends on `inventory`, reuses its operations).

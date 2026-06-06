@@ -1,15 +1,15 @@
-# SPEC-FORMAT.md — The GFS Meta-Spec
+# SPEC-FORMAT.md — The BGL Meta-Spec
 
-This document defines the format every GameSpec (`*.gfs.md`) file must follow. The tooling in `tools/` enforces it mechanically (`npm run validate`). If you change this format, bump `specFormatVersion` and update `tools/validate.mjs` to match.
+This document defines the format every Better Games (`*.bgl.md`) file must follow. The tooling in `tools/` enforces it mechanically (`npm run validate`). If you change this format, bump `specFormatVersion` and update `tools/validate.mjs` to match.
 
-A GameSpec is a **pure, engine- and language-agnostic design** for one game feature. It tells an implementer *what* to build and *how it must behave* — never *which language or engine* to build it in.
+A Better Games is a **pure, engine- and language-agnostic design** for one game feature. It tells an implementer *what* to build and *how it must behave* — never *which language or engine* to build it in.
 
 ---
 
 ## File location & naming
 
-- Specs live under `specs/<category>/<id>.gfs.md`.
-- The filename stem **must equal** the frontmatter `id` (e.g. `inventory.gfs.md` → `id: inventory`).
+- Specs live under `specs/<category>/<id>.bgl.md`.
+- The filename stem **must equal** the frontmatter `id` (e.g. `inventory.bgl.md` → `id: inventory`).
 - `id` is **kebab-case**, lowercase, unique across the library.
 
 ---
@@ -85,4 +85,4 @@ Immediately after the frontmatter, the body must contain these `##` headings, **
 
 Run `npm run validate` (in `tools/`) before committing. It checks frontmatter keys/types, `id`==filename, SemVer, category==folder, presence and order of required sections, that every `dependsOn`/`requiredBy` id exists, and reciprocity of the dependency graph. See `tools/validate.mjs`.
 
-To start a new spec, copy `TEMPLATE.gfs.md`.
+To start a new spec, copy `TEMPLATE.bgl.md`.

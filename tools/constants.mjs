@@ -1,10 +1,10 @@
-// Single source of truth for the GFS meta-format rules.
+// Single source of truth for the BGL meta-format rules.
 // Imported by the parser, validator, builder, and tests so nothing is duplicated.
 // If you change these, update SPEC-FORMAT.md and bump SPEC_FORMAT_VERSION.
 
 export const SPEC_FORMAT_VERSION = 1;
 
-export const SPEC_FILE_EXT = ".gfs.md";
+export const SPEC_FILE_EXT = ".bgl.md";
 
 export const STATUS_VALUES = ["draft", "stable", "deprecated"];
 

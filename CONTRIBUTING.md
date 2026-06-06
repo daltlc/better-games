@@ -1,10 +1,10 @@
 # Contributing
 
-Thanks for adding to the GameSpec Library. Specs are the product — keep them rigorous, portable, and consistent. All work follows the standards in [`AGENTS.md`](AGENTS.md).
+Thanks for adding to the Better Games Library. Specs are the product — keep them rigorous, portable, and consistent. All work follows the standards in [`AGENTS.md`](AGENTS.md).
 
 ## Add or change a spec
 
-1. **Start from the template.** Copy `TEMPLATE.gfs.md` to `specs/<category>/<id>.gfs.md`. The filename stem must equal the frontmatter `id` (kebab-case).
+1. **Start from the template.** Copy `TEMPLATE.bgl.md` to `specs/<category>/<id>.bgl.md`. The filename stem must equal the frontmatter `id` (kebab-case).
 2. **Fill the frontmatter** per [`SPEC-FORMAT.md`](SPEC-FORMAT.md). Declare dependencies with `dependsOn`; they must be **reciprocal** (the other spec lists you in `requiredBy`).
 3. **Write all ten required sections**, in order. Keep logic in **neutral pseudocode** — never a specific real language.
 4. **Reuse, don't duplicate.** If your feature needs storage, depend on `inventory` and call its operations; don't redefine them. Soft references (mentioned in prose, not a build dependency) go in **Known Limitations & Notes**, not in `dependsOn`.
