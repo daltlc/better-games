@@ -1,4 +1,4 @@
-# Better Games Library
+# Better Games Library - VIBECODED - JUST FOR FUN
 
 I was playing Forza and noticed the turbo gauge was completely wrong. Boost builds instantly, drops instantly, and doesn't care what RPM you're at or how hard you're on the throttle.
 
